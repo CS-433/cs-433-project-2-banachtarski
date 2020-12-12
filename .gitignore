@@ -1,0 +1,6 @@
+/output/blend/*
+/output/nn/*
+/output/resnet/*
+/output/tabnet/*
+/input/lish-moa/*
+/input/*
