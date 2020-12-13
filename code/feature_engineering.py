@@ -83,7 +83,7 @@ def variance_threshold(train_features, test_features, threshold = 0.85):
 
 
 # make clusters for either GENES or CELLS variables and add them to the dataset as features
-def create_cluster(train, test, kind, output_path, SEED = 42):
+def create_cluster(train, test, train_features2, test_features2, kind, output_path, SEED = 42):
     assert kind == "C" or kind == "G"
     if kind == 'G':
         n_clusters = 22
@@ -94,8 +94,8 @@ def create_cluster(train, test, kind, output_path, SEED = 42):
         features = CELLS
         path = output_path + 'kmeans_cells.pkl'
 
-    train_ = train[features].copy()
-    test_ = test[features].copy()
+    train_ = train_features2[features].copy()
+    test_ = test_features2[features].copy()
     data = pd.concat([train_, test_], axis = 0)
     kmeans = KMeans(n_clusters = n_clusters, random_state = SEED).fit(data)
     dump(kmeans, open(path, 'wb'))
@@ -107,10 +107,7 @@ def create_cluster(train, test, kind, output_path, SEED = 42):
 
 
 # make clusters for either variables created after PCA and add them to the dataset as features
-def create_cluster_pca(train, test, n_clusters=5, output_path = "", SEED = 42):
-    pca_columns = [col for col in train.columns if col.startswith('pca')]
-    train_pca = train[pca_columns]
-    test_pca = test[pca_columns]
+def create_cluster_pca(train, test, train_pca, test_pca, n_clusters=5, output_path = "", SEED = 42):
     data = pd.concat([train_pca,test_pca],axis=0)
     kmeans_pca = KMeans(n_clusters = n_clusters, random_state = SEED).fit(data)
     dump(kmeans_pca, open(output_path + 'kmeans_pca.pkl', 'wb'))
@@ -177,33 +174,55 @@ def add_statistics_and_square(train, test):
 
 
 
-def preprocess(train, test, model):
-    if model == "nn":
-        output_path = "../output/nn/"
-    elif model == "tabnet":
-        output_path = "../output/tabnet/"
+def preprocess(train, test, output_path):
     set_seed(42)
+    train_features2=train.copy()
+    test_features2=test.copy()
+
     print("making gaussian distributions")
     train, test = make_gaussian(train, test)
     print("performing pca on genes")
     train, test = add_pca(train, test, kind = "G", output_path = output_path)
     print("performing pca on cells")
     train, test = add_pca(train, test, kind = "C",  output_path = output_path)
+
+    pca_columns = [col for col in train.columns if col.startswith('pca')]
+    train_pca = train[pca_columns]
+    test_pca = test[pca_columns]
+
+    assert train.shape[1] == test.shape[1]
     print("variance threshold:", 0.85)
 
     train, test = variance_threshold(train, test, threshold = 0.85)
+    assert train.shape[1] == test.shape[1]
+
     print("adding clusters generated from KMeans as features")
-    train, test = create_cluster(train, test, kind = "G", output_path=output_path)
-    train, test = create_cluster(train, test, kind = "C", output_path=output_path)
-    train, test = create_cluster_pca(train, test, n_clusters=5, output_path=output_path)
+    train, test = create_cluster(train, test, train_features2, test_features2, kind = "G", output_path=output_path)
+    assert train.shape[1] == test.shape[1]
+    train, test = create_cluster(train, test, train_features2, test_features2, kind = "C", output_path=output_path)
+    assert train.shape[1] == test.shape[1]
+
+    train, test = create_cluster_pca(train, test, train_pca, test_pca, n_clusters=5, output_path=output_path)
+    assert train.shape[1] == test.shape[1]
+
     print("adding statistics and square of columns as new features")
-    train, test = add_statistics_and_square(train, test)
+    init_col = train_features2.shape[1]
+    stats_train, stats_test = add_statistics_and_square(train_features2, test_features2)
+
+    #print(stats_train.columns[init_col])
+    stats_train = stats_train.iloc[:, init_col:]
+    stats_test = stats_test.iloc[:,init_col:]
+    train = pd.concat((train, stats_train), axis = 1)
+    test = pd.concat((test, stats_test), axis = 1)
+    assert train.shape[1] == test.shape[1]
+
     print("new number of columns:", train.shape[1])
+    return train, test
 
 
 if __name__ == "__main__":
     train_features = pd.read_csv('../input/lish-moa/train_features.csv')
 
     test_features = pd.read_csv('../input/lish-moa/test_features.csv')
-    preprocess(train_features, test_features, model = "tabnet")
+    preprocess(train_features, test_features, output_path = "../")
 
