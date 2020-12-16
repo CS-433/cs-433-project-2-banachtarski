@@ -91,4 +91,5 @@ Before running the notebooks, ensure that your current working directory is: <br
 ```
 your_path_to_home\Desktop\projectML\cs-433-project-2-banachtarski\code 
 ```
-This is **very important**, otherwise you won't be able to read the input files from the notebooks
+This is **very important**, otherwise you won't be able to read the input files from the notebooks. <br>
+Final note: the time to train the neural networks can vary widely depending on the hardware used, with one GPU it takes about one to two hours to run the training notebooks, with CPU way more. Instead the time necessary to run the notebook blend.ipynb is approximately 10 minutes independently of the hardware used. 
