@@ -122,7 +122,7 @@ def create_cluster_pca(train, test, train_pca, test_pca, n_clusters, input_path,
     return train, test
 
 
-
+# preprocessing used to reproduce submission with pre-trained models
 def inference_preprocess(train, test, input_path):
     set_seed(42)
     train_features2=train.copy()
@@ -139,22 +139,15 @@ def inference_preprocess(train, test, input_path):
     train_pca = train[pca_columns]
     test_pca = test[pca_columns]
 
-
-
-    assert train.shape[1] == test.shape[1]
     print("variance threshold:", 0.85)
 
     train, test = variance_threshold(train, test, threshold = 0.85)
-    assert train.shape[1] == test.shape[1]
 
     print("adding clusters generated from KMeans as features")
     train, test = create_cluster(train, test, train_features2, test_features2, kind = "G", input_path=input_path)
-    assert train.shape[1] == test.shape[1]
     train, test = create_cluster(train, test, train_features2, test_features2, kind = "C", input_path=input_path)
-    assert train.shape[1] == test.shape[1]
 
     train, test = create_cluster_pca(train, test, train_pca, test_pca, n_clusters=5, input_path=input_path)
-    assert train.shape[1] == test.shape[1]
 
     print("adding statistics and square of columns as new features")
     init_col = train_features2.shape[1]
@@ -165,7 +158,6 @@ def inference_preprocess(train, test, input_path):
     stats_test = stats_test.iloc[:,init_col:]
     train = pd.concat((train, stats_train), axis = 1)
     test = pd.concat((test, stats_test), axis = 1)
-    assert train.shape[1] == test.shape[1]
 
     print("new number of columns:", train.shape[1])
     return train, test
