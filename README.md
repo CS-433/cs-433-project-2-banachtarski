@@ -81,8 +81,9 @@ pip install torch
 
 pip install iterative-stratification
 
-pip install tensorflow
+pip install tensorflow==2.3.1
 ```
+**Note**: Later versions of tensorflow will throw warnings when loading the pre-trained models, but the code would execute. So if you have installed for example version 2.4.0 you can consider leaving it as it is.<br>
 To load models of TabNet you need specifically the version of pytorch-tabnet 2.0.1. If you already have pytorch-tabnet installed execute the following two lines, otherwise execute only the second line:
 ```
 pip uninstall pytorch-tabnet
