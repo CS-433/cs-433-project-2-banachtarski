@@ -79,11 +79,14 @@ Run the following commands in order to have the necessary packages to be able to
 ```
 pip install torch
 
-pip install pytorch-tabnet
-
 pip install iterative-stratification
 
 pip install tensorflow
+```
+To load models of TabNet you need specifically the version of pytorch-tabnet 2.0.1. If you already have pytorch-tabnet installed execute the following two lines, otherwise execute only the second line:
+```
+pip uninstall pytorch-tabnet
+pip install pytorch-tabnet==2.0.1
 ```
 
 ## Last but not least
