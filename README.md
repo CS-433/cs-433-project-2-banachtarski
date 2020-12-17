@@ -50,12 +50,13 @@ d-----        14/12/2020     15:59                output
 Since this folders are pretty heavy to download (2.76 GB approximately), you can download **only** the output folder from the Google Drive link above, and the competition datasets here: <br>
 https://www.kaggle.com/c/lish-moa/data <br>
 Unzip the file lish-moa.zip, create a folder called **input** inside cs-433-project-2-banachtarski and copy the folder lish-moa inside the folder input.<br>
-Commands assuming your current directory is "your_path_to_home/Downloads" and you unzipped lish-moa:
+Commands assuming your current directory is "your_path_to_home/Downloads" and you unzipped lish-moa and output:
 
 ```
 mkdir input
 mv .\lish-moa\ .\input\ 
 mv .\input\ ..\Desktop\projectML\cs-433-project-2-banachtarski\
+mv .\output\ ..\Desktop\projectML\cs-433-project-2-banachtarski\
 cd ..\Desktop\projectML\cs-433-project-2-banachtarski\
 ls
 ```
@@ -69,6 +70,7 @@ Mode                 LastWriteTime         Length Name
 ----                 -------------         ------ ----
 d-----        16/12/2020     11:02                code
 d-----        16/12/2020     11:27                input
+d-----        16/12/2020     11:27                output
 -a----        16/12/2020     11:02             94 .gitignore
 -a----        16/12/2020     11:02           2062 README.md
 ```
@@ -82,6 +84,10 @@ pip install torch
 pip install iterative-stratification
 
 pip install tensorflow==2.3.1
+
+pip install pydot
+
+pip install graphviz
 ```
 **Note**: Later versions of tensorflow will throw warnings when loading the pre-trained models, but the code would execute. So if you have installed for example version 2.4.0 you can consider leaving it as it is.<br>
 To load models of TabNet you need specifically the version of pytorch-tabnet 2.0.1. If you already have pytorch-tabnet installed execute the following two lines, otherwise execute only the second line:
